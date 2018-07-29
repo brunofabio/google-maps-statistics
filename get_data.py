@@ -5,14 +5,7 @@ from pandas import Series
 import tempfile
 import numpy as np
 import requests
-
-def json_file_from_url(url):
-	"""Read JSON from given url and return a temporary file object"""
-	response = requests.get(url)
-	tmp_file = tempfile.mkstemp(suffix='.json')
-	with open(tmp_file[1], 'w') as f:
-		f.write(response.text)
-	return tmp_file[1]
+import os
 
 def filter_columns(df, keep):
 	"""Filter Pandas table df keeping only columns in keep"""
@@ -56,7 +49,7 @@ def main():
 	# Get statistics from Statistics Finland portal for year 2018 keeping only the selected data columns
 	url = "http://geo.stat.fi/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=postialue:pno_tilasto_2018&outputFormat=json"
 	keep_columns = ['nimi', 'posti_alue', 'he_vakiy', 'geometry', 'pinta_ala', 'hr_mtu']
-	data = filter_columns(gpd.read_file(json_file_from_url(url)), keep_columns)
+	data = filter_columns(gpd.read_file(url), keep_columns)
 
 	# Rename columns
 	data.rename(columns={'he_vakiy': 'pop2018', 'pinta_ala': 'area', 'nimi': 'name', 'hr_mtu': 'income', 'posti_alue': 'zip'}, inplace=True)
@@ -106,8 +99,13 @@ def main():
 	data['fill_density'] = Series(colors, dtype='str', index=data.index)
 
 	# Save data as GeoJSON
-	with open('map_data.json', 'w') as f:
-		f.write(data.to_json())
+	# Note the driver cannot overwrite an existing file,
+	# so we must remove it first
+	outfile = 'map_data.json'
+	if os.path.isfile(outfile):
+		os.remove(outfile)
+
+	data.to_file('map_data.json', driver='GeoJSON')
 
 if __name__ == '__main__':
 	main()
