@@ -57,8 +57,9 @@ def main():
 	# Convert geometry to Google Maps compatible Lat/Long coordinates
 	data.to_crs({'init': 'epsg:4326'}, inplace=True)
 
-	# Some income data might be NaNs or -1.0
-	# because of privacy reasons if too few inhabitants, or no inhabitants at all
+	# Income data in some postal code areas might be undefined (NaNs or -1.0)
+	# In these areas, there are either no inhabitants at all, or too few inhabitans
+	# so the income data is not shown for privacy reasons
 	# Set the income in these regions to the national average
 	data.replace(-1.0, np.nan, inplace=True)
 	avg_income = np.nanmean(data['income'])
@@ -73,10 +74,11 @@ def main():
 	# Now calculate density in in citizens/km^2
 	data['pop_density'] = data['pop2018']/data['area']
 
-	# Round data to 2 decimal places
+	# Round data to 2 decimal places to reduce size of resulting GeoJSON file
 	data = data.round({'pop_density': 2, 'income_relative': 2})
-	# As a further reduction of the JSON file size, we could round coordinates
+	# To further reduce the file size, we could round the coordinates
 	# of the Polygon objects as well
+	# This is quite cumbersome with GeoPandas, so I opted to use the ogr2ogr tool
 
 	# Assign colors to zip codes based on relative median income by binning data
 	bins, cmap = income_binning()
@@ -105,7 +107,7 @@ def main():
 	if os.path.isfile(outfile):
 		os.remove(outfile)
 
-	data.to_file('map_data.json', driver='GeoJSON')
+	data.to_file(outfile, driver='GeoJSON')
 
 if __name__ == '__main__':
 	main()
