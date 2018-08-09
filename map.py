@@ -45,7 +45,7 @@ def main():
     with open(outfile, "w") as out:
         print(gmap, file=out)
 
-    webbrowser.get('google-chrome').open_new_tab(outfile)
+    webbrowser.open_new_tab(outfile)
 
 if __name__ == '__main__':
     main()

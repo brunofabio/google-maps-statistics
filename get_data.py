@@ -2,9 +2,7 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 import matplotlib
 from pandas import Series
-import tempfile
 import numpy as np
-import requests
 import os
 
 def filter_columns(df, keep):
