@@ -6,4 +6,4 @@ try:
 
 except:
 	# Insert your API key here
-	key = 'YOUR_API_KEY_HERE'
+	key = 'AIzaSyCFiggwEU6yOmDBF8-5ImsUzLPD7fmAkR8'

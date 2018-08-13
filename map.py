@@ -22,7 +22,7 @@ class Map(object):
         html = ''.join(html)
 
         # API key
-        html = html.replace('YOUR_API_KEY_HERE', key)
+        html = html.replace('AIzaSyCFiggwEU6yOmDBF8-5ImsUzLPD7fmAkR8', key)
 
         # Labels and colors for default relative median income visualizion
         labels, colors = income_binning(return_colors=True)
